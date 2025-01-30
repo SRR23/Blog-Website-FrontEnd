@@ -1,0 +1,263 @@
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import myaxios from "../utils/myaxios";
+
+const AllBlogPage = () => {
+    const [blogs, setBlogs] = useState([]); // Blogs array
+    const [latest, setLatest] = useState([]); // Latest blog array
+    const [categories, setCategories] = useState([]); // Blog categories
+    const [tags, setTags] = useState([]); // Blog tags
+    const [loading, setLoading] = useState(true); // Loading state
+    const [nextPage, setNextPage] = useState(null); // Next page URL
+    const [previousPage, setPreviousPage] = useState(null); // Previous page URL
+  
+    const location = useLocation();
+    const navigate = useNavigate();
+  
+    // Extract page number from query params
+    const searchParams = new URLSearchParams(location.search);
+    const currentPage = searchParams.get("page") || 1;
+  
+    // Fetch blogs
+    const fetchBlogs = (url = `/all-blogs/?page=${currentPage}`) => {
+      setLoading(true);
+      myaxios
+        .get(url)
+        .then((response) => {
+          const data = response.data;
+        //   console.log("Fetched data:", data);
+  
+          // Set blogs and pagination links
+          setBlogs(data.results);
+          setNextPage(data.next);
+          setPreviousPage(data.previous);
+        })
+        .catch((error) => console.error("There was an error!", error))
+        .finally(() => setLoading(false));
+    };
+  
+    useEffect(() => {
+      fetchBlogs(); // Fetch blogs based on current page
+    }, [currentPage]);
+
+
+    // Fetch Latest blog
+    useEffect(() => {
+        myaxios
+            .get("/all-blogs/?latest=3")
+            .then((response) => {
+                // console.log("Fetched data:", response.data);
+                if (response.data && response.data.length > 0) {
+                    setLatest(response.data); // Set the entire array of blogs
+                }
+            })
+            .catch((error) => {
+                console.error("There was an error!", error);
+            })
+    }, []);
+
+
+    // Fetch categories
+    useEffect(() => {
+      myaxios
+        .get("/categories/")
+        .then((response) => {
+          if (response.data) {
+            setCategories(response.data);
+          }
+        })
+        .catch((error) => console.error("Error fetching categories:", error));
+    }, []);
+  
+    // Fetch tags
+    useEffect(() => {
+      myaxios
+        .get("/tags/")
+        .then((response) => {
+          if (response.data) {
+            setTags(response.data);
+          }
+        })
+        .catch((error) => console.error("Error fetching tags:", error));
+    }, []);
+  
+    if (loading) {
+      return <div>Loading...</div>;
+    }
+  
+    // Updated handlePagination function
+    const handlePagination = (pageUrl) => {
+        if (pageUrl) {
+        fetchBlogs(pageUrl); // Fetch blogs for the provided page URL
+        const urlParams = new URL(pageUrl);
+        const page = urlParams.searchParams.get("page") || 1;
+        navigate(`?page=${page}`); // Update the URL in the browser
+        }
+    };
+
+  return (
+    <div>
+      <div className="heading-page header-text">
+        <section className="page-heading">
+          <div className="container">
+            <div className="row">
+              <div className="col-lg-12">
+                <div className="text-content">
+                    <h4>Blogs</h4>
+                    <h4>Page-{currentPage}</h4>
+                    <h2>List of all blogs</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section className="blog-posts grid-system">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-8">
+              <div className="all-blog-posts">
+                <div className="row">
+                  {blogs.map((blog) => (
+                    <div className="col-lg-6" key={blog.id}>
+                      <div className="blog-post">
+                        <div className="blog-thumb">
+                          <img
+                            src={blog.banner}
+                            style={{ height: "300px" }}
+                            alt="Blog Banner"
+                          />
+                        </div>
+                        <div className="down-content">
+                          <span>{blog.category_title}</span>
+                          <Link to={`/blog-details/${blog.slug}`}>
+                            <h4>{blog.title}</h4>
+                          </Link>
+                          <ul className="post-info">
+                            <li>
+                              <a href="#">{blog.user}</a>
+                            </li>
+                            <li>
+                              <a href="#">{blog.created_date}</a>
+                            </li>
+                            <li>
+                              <a href="#">{blog.reviews.length} Comments</a>
+                            </li>
+                          </ul>
+                          <div className="post-options">
+                            <div className="row">
+                              <div className="col-lg-12">
+                                <ul className="post-tags">
+                                  <li>
+                                    <i className="fa fa-tags"></i>
+                                  </li>
+                                  <li>{blog.tag_title.join(", ")}</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div className="col-lg-12">
+                        <div className="pagination">
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => handlePagination(previousPage)}
+                                disabled={!previousPage} // Disable if there's no previous page
+                            >
+                                Prev
+                            </button>
+
+                            <div>
+                                <span>page-{currentPage}</span>
+                                {/* <span>&nbsp;&nbsp;&nbsp;</span> Add 3 spaces here */}
+                            </div>
+
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => handlePagination(nextPage)}
+                                disabled={!nextPage} // Disable if there's no next page
+                            >
+                                Next
+                            </button>
+                        </div>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar content */}
+            <div className="col-lg-4">
+              <div className="sidebar">
+                <div className="row">
+                                    
+                    <div className="col-lg-12">
+                        <div className="sidebar-item recent-posts">
+                            <div className="sidebar-heading">
+                                <h2>Recent Blogs</h2>
+                            </div>
+                            <div className="content">
+                            
+                                <ul>
+                                {latest.map((blog) => (
+                                    <li><Link to={`/blog-details/${blog.slug}/`}>
+                                    <h5>{blog.title}</h5>
+                                    <span>{blog.created_date}</span>
+                                    </Link></li>
+                                ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-lg-12">
+                    <div className="sidebar-item categories">
+                        <div className="sidebar-heading">
+                        <h2>Categories</h2>
+                        </div>
+                        <div className="content">
+                            <ul>
+                                {categories.map(category => (
+                                    <li key={category.id}>
+                                        <Link to={`/category-blogs/?category=${category.id}`}>
+                                            - {category.title}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                    </div>
+                    <div className="col-lg-12">
+                    <div className="sidebar-item tags">
+                        <div className="sidebar-heading">
+                        <h2>Tag Clouds</h2>
+                        </div>
+                        <div className="content">
+                            <ul>
+                                {tags.map(tag => (
+                                    <li key={tag.id}>
+                                        <Link to={`/tag-blogs/?tags=${tag.slug}`}>{tag.title}</Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            {/* end Sidebar content */}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default AllBlogPage;
