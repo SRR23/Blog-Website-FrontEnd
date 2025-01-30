@@ -13,48 +13,53 @@ const SearchBlogsPage = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (searchQuery) {
-            myaxios.get(`/search/?find=${searchQuery}`)
-                .then(response => {
-                    setBlogs(response.data);
-                    setLoading(false);
-                })
-                .catch(error => {
-                    console.error("Error fetching search results:", error);
-                    setLoading(false);
-                });
-        }
-    }, [searchQuery]);
+        const fetchBlogsBySearch = async () => {
+            if (!searchQuery) return; // Early return if categoryId is not provided
+    
+            setLoading(true);
+    
+            try {
+                const response = await myaxios.get(`/search/?find=${searchQuery}`);
+                const data = response.data;
+    
+                if (data) {
+                    setBlogs(data); // Directly setting the array of blogs
+                }
+            } catch (error) {
+                console.error('Error fetching filtered blogs:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchBlogsBySearch(); // Fetch blogs when categoryId changes
+    }, [searchQuery]); // Effect depends on categoryId
 
-    // Fetch latest blogs
-    useEffect(() => {
-        myaxios.get("/all-blogs/?latest=3")
-            .then(response => {
-                console.log("Latest Blogs Response:", response.data);
-                setLatest(response.data || []);
-            })
-            .catch(error => console.error("Error fetching latest blogs:", error));
-    }, []);
 
-    // Fetch categories
     useEffect(() => {
-        myaxios.get("/categories/")
-            .then(response => {
-                console.log("Categories Response:", response.data);
-                setCategories(response.data || []);
-            })
-            .catch(error => console.error("Error fetching categories:", error));
-    }, []);
+        const fetchData = async () => {
+            try {
+                // Fetch blogs, categories, and tags simultaneously
+                const [blogsRes, categoriesRes, tagsRes] = await Promise.all([
+                    myaxios.get("/all-blogs/?latest=3"),
+                    myaxios.get("/categories/"),
+                    myaxios.get("/tags/")
+                ]);
+    
+                // Set state for all data
+                setLatest(blogsRes.data || []);
+                setCategories(categoriesRes.data || []);
+                setTags(tagsRes.data || []);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchData();
+    }, []); // Empty dependency array, so this runs once on mount
 
-    // Fetch tags
-    useEffect(() => {
-        myaxios.get("/tags/")
-            .then(response => {
-                console.log("Tags Response:", response.data);
-                setTags(response.data || []);
-            })
-            .catch(error => console.error("Error fetching tags:", error));
-    }, []);
 
     return (
         <div>

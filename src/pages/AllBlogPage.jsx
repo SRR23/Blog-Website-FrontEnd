@@ -18,68 +18,54 @@ const AllBlogPage = () => {
     const searchParams = new URLSearchParams(location.search);
     const currentPage = searchParams.get("page") || 1;
   
-    // Fetch blogs
-    const fetchBlogs = (url = `/all-blogs/?page=${currentPage}`) => {
-      setLoading(true);
-      myaxios
-        .get(url)
-        .then((response) => {
-          const data = response.data;
-        //   console.log("Fetched data:", data);
+    const fetchBlogs = async (url = `/all-blogs/?page=${currentPage}`) => {
+      setLoading(true); // Start loading before the request
   
-          // Set blogs and pagination links
-          setBlogs(data.results);
-          setNextPage(data.next);
-          setPreviousPage(data.previous);
-        })
-        .catch((error) => console.error("There was an error!", error))
-        .finally(() => setLoading(false));
+      try {
+          const response = await myaxios.get(url);
+          const data = response.data;
+  
+          if (data) {
+              setBlogs(data.results);
+              setNextPage(data.next);
+              setPreviousPage(data.previous);
+          }
+      } catch (error) {
+          console.error("Error fetching blogs:", error);
+      } finally {
+          setLoading(false); // Set loading to false after the request is completed
+      }
     };
   
     useEffect(() => {
       fetchBlogs(); // Fetch blogs based on current page
-    }, [currentPage]);
+    }, [currentPage]); // Only re-fetch when currentPage changes
 
 
-    // Fetch Latest blog
     useEffect(() => {
-        myaxios
-            .get("/all-blogs/?latest=3")
-            .then((response) => {
-                // console.log("Fetched data:", response.data);
-                if (response.data && response.data.length > 0) {
-                    setLatest(response.data); // Set the entire array of blogs
-                }
-            })
-            .catch((error) => {
-                console.error("There was an error!", error);
-            })
-    }, []);
-
-
-    // Fetch categories
-    useEffect(() => {
-      myaxios
-        .get("/categories/")
-        .then((response) => {
-          if (response.data) {
-            setCategories(response.data);
-          }
-        })
-        .catch((error) => console.error("Error fetching categories:", error));
-    }, []);
+      const fetchData = async () => {
+          try {
+              // Fetch blogs, categories, and tags simultaneously
+              const [blogsRes, categoriesRes, tagsRes] = await Promise.all([
+                  myaxios.get("/all-blogs/?latest=3"),
+                  myaxios.get("/categories/"),
+                  myaxios.get("/tags/")
+              ]);
   
-    // Fetch tags
-    useEffect(() => {
-      myaxios
-        .get("/tags/")
-        .then((response) => {
-          if (response.data) {
-            setTags(response.data);
+              // Set state for all data
+              setLatest(blogsRes.data || []);
+              setCategories(categoriesRes.data || []);
+              setTags(tagsRes.data || []);
+          } catch (error) {
+              console.error("Error fetching data:", error);
+          } finally {
+              setLoading(false);
           }
-        })
-        .catch((error) => console.error("Error fetching tags:", error));
-    }, []);
+      };
+  
+      fetchData();
+    }, []); // Empty dependency array, so this runs once on mount
+  
   
     if (loading) {
       return <div>Loading...</div>;
@@ -205,7 +191,7 @@ const AllBlogPage = () => {
                             
                                 <ul>
                                 {latest.map((blog) => (
-                                    <li><Link to={`/blog-details/${blog.slug}/`}>
+                                    <li key={blog.id}><Link to={`/blog-details/${blog.slug}/`}>
                                     <h5>{blog.title}</h5>
                                     <span>{blog.created_date}</span>
                                     </Link></li>

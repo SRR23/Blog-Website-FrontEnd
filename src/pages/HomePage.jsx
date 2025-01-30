@@ -9,45 +9,29 @@ const HomePage = () => {
     const [loading, setLoading] = useState(true); // Loading state
 
     useEffect(() => {
-        myaxios
-            .get("/all-blogs/?latest=3")
-            .then((response) => {
-                console.log("Fetched data:", response.data);
-                if (response.data && response.data.length > 0) {
-                    setBlogs(response.data); // Set the entire array of blogs
-                }
-            })
-            .catch((error) => {
-                console.error("There was an error!", error);
-            })
-            .finally(() => {
-                setLoading(false); // Update loading state
-            });
+        const fetchData = async () => {
+            try {
+                // Fetch blogs, categories, and tags simultaneously
+                const [blogsRes, categoriesRes, tagsRes] = await Promise.all([
+                    myaxios.get("/all-blogs/?latest=3"),
+                    myaxios.get("/categories/"),
+                    myaxios.get("/tags/")
+                ]);
+
+                // Set state for all data
+                setBlogs(blogsRes.data || []);
+                setCategories(categoriesRes.data || []);
+                setTags(tagsRes.data || []);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, []);
 
-    // Fetch categories
-    useEffect(() => {
-        myaxios.get("/categories/")
-            .then(response => {
-                if (response.data) {
-                    setCategories(response.data);
-                }
-            })
-            .catch(error => console.error("Error fetching categories:", error));
-    }, []);
-
-    // Fetch tags
-    useEffect(() => {
-        myaxios.get("/tags/")
-            .then(response => {
-                if (response.data) {
-                    setTags(response.data);
-                }
-            })
-            .catch(error => console.error("Error fetching tags:", error));
-    }, []);
-
-    // Show a loading message while the data is being fetched
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -208,7 +192,7 @@ const HomePage = () => {
                                 <div className="row">
 
                                 {blogs.map((blog) => (
-                                    <div className="col-lg-12">
+                                    <div className="col-lg-12" key={blog.id}>
                                         <div className="blog-post">
                                             <div className="blog-thumb">
                                                 <img style={{ height: "300px"}}
@@ -275,7 +259,7 @@ const HomePage = () => {
                                             
                                                 <ul>
                                                 {blogs.map((blog) => (
-                                                    <li><Link to={`/blog-details/${blog.slug}/`}>
+                                                    <li key={blog.id}><Link to={`/blog-details/${blog.slug}/`}>
                                                     <h5>{blog.title}</h5>
                                                     <span>{blog.created_date}</span>
                                                     </Link></li>

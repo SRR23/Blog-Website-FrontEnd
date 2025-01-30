@@ -12,52 +12,56 @@ const CategoryBlogFilterPage = () => {
     const searchParams = new URLSearchParams(location.search); 
     const categoryId = searchParams.get('category'); 
 
-    console.log("Current category ID:", categoryId); // Debugging
+    // console.log("Current category ID:", categoryId); // Debugging
 
-    // Fetch blogs by category
     useEffect(() => {
-        if (categoryId) {
-            console.log("Fetching blogs for category:", categoryId);
+        const fetchBlogsByCategory = async () => {
+            if (!categoryId) return; // Early return if categoryId is not provided
+    
             setLoading(true);
-            myaxios.get(`/filter-category/?category=${categoryId}`)
-                .then(response => {
-                    console.log("API Response:", response.data);
-                    setBlogs(response.data); // Directly setting the array
-                })
-                .catch(error => console.error('Error fetching filtered blogs:', error))
-                .finally(() => setLoading(false));
-        }
-    }, [categoryId]);
+    
+            try {
+                const response = await myaxios.get(`/filter-category/?category=${categoryId}`);
+                const data = response.data;
+    
+                if (data) {
+                    setBlogs(data); // Directly setting the array of blogs
+                }
+            } catch (error) {
+                console.error('Error fetching filtered blogs:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchBlogsByCategory(); // Fetch blogs when categoryId changes
+    }, [categoryId]); // Effect depends on categoryId
 
-    // Fetch latest blogs
-    useEffect(() => {
-        myaxios.get("/all-blogs/?latest=3")
-            .then(response => {
-                console.log("Latest Blogs Response:", response.data);
-                setLatest(response.data || []);
-            })
-            .catch(error => console.error("Error fetching latest blogs:", error));
-    }, []);
 
-    // Fetch categories
     useEffect(() => {
-        myaxios.get("/categories/")
-            .then(response => {
-                console.log("Categories Response:", response.data);
-                setCategories(response.data || []);
-            })
-            .catch(error => console.error("Error fetching categories:", error));
-    }, []);
+        const fetchData = async () => {
+            try {
+                // Fetch blogs, categories, and tags simultaneously
+                const [blogsRes, categoriesRes, tagsRes] = await Promise.all([
+                    myaxios.get("/all-blogs/?latest=3"),
+                    myaxios.get("/categories/"),
+                    myaxios.get("/tags/")
+                ]);
+    
+                // Set state for all data
+                setLatest(blogsRes.data || []);
+                setCategories(categoriesRes.data || []);
+                setTags(tagsRes.data || []);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchData();
+      }, []); // Empty dependency array, so this runs once on mount
 
-    // Fetch tags
-    useEffect(() => {
-        myaxios.get("/tags/")
-            .then(response => {
-                console.log("Tags Response:", response.data);
-                setTags(response.data || []);
-            })
-            .catch(error => console.error("Error fetching tags:", error));
-    }, []);
 
     return (
         <div>
@@ -68,8 +72,8 @@ const CategoryBlogFilterPage = () => {
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="text-content">
-                                    <h4>Blogs</h4>
-                                    <h4>Category-{categoryId}</h4>
+                                    <h4>Category Results</h4>
+                                    <h2>Category-{categoryId}</h2>
                                 </div>
                             </div>
                         </div>
