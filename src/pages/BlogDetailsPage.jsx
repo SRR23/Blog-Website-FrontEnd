@@ -9,6 +9,7 @@ const BlogDetailsPage = () => {
     const [blog, setBlog] = useState(null);
     const [categories, setCategories] = useState([]); // Blog categories
     const [tags, setTags] = useState([]); // Blog tags
+    const [loading, setLoading] = useState(true);  // Added loading state
     const [comment, setComment] = useState("");
     const [rating, setRating] = useState(5); // Default rating is 5
     const [reviews, setReviews] = useState([]);
@@ -16,25 +17,29 @@ const BlogDetailsPage = () => {
 
     const [error, setError] = useState(null);
 
+    const fetchBlogDetails = async (slug, setBlog, setReviews, setError) => {
+        setLoading(true);
+        try {
+            const response = await myaxios.get(`/blog-details/${slug}/`);
+            // console.log(response.data);
+            setBlog(response.data);
+            setReviews(response.data.reviews);
+        } catch (error) {
+            console.error("Error fetching blog details:", error);
+            setError("Failed to fetch blog details.");
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     useEffect(() => {
-        myaxios.get(`/blog-details/${slug}/`)
-            .then(response => {
-                console.log(response.data);
-                setBlog(response.data);
-                setReviews(response.data.reviews);
-                // setIsFavourite(response.data.is_favourited); // Set the favorite state
-            })
-            .catch(error => {
-                console.error("Error fetching blog details:", error);
-                setError("Failed to fetch blog details.");
-            });
+        if (!slug) return;
+        fetchBlogDetails(slug, setBlog, setReviews, setError);
     }, [slug]);
 
-    // const blogId = blog.id;
+
     // Handle Favourites button
     const handleAddToFavourite = async (blogId) => {
-        // const token = localStorage.getItem("token");
-        // const navigate = useNavigate();
     
         if (!token) {
             navigate("/login"); // Redirect to login if not authenticated
@@ -59,29 +64,29 @@ const BlogDetailsPage = () => {
         }
     };
 
-    // Fetch categories
+
     useEffect(() => {
-        myaxios
-          .get("/categories/")
-          .then((response) => {
-            if (response.data) {
-              setCategories(response.data);
-            }
-          })
-          .catch((error) => console.error("Error fetching categories:", error));
-      }, []);
+        const fetchData = async () => {
+            try {
+                // Fetch blogs, categories, and tags simultaneously
+                const [categoriesRes, tagsRes] = await Promise.all([
+                    myaxios.get("/categories/"),
+                    myaxios.get("/tags/")
+                ]);
     
-      // Fetch tags
-    useEffect(() => {
-        myaxios
-          .get("/tags/")
-          .then((response) => {
-            if (response.data) {
-              setTags(response.data);
+                // Set state for all data
+                setCategories(categoriesRes.data || []);
+                setTags(tagsRes.data || []);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
+                setLoading(false);
             }
-          })
-          .catch((error) => console.error("Error fetching tags:", error));
-      }, []);
+        };
+    
+        fetchData();
+    }, []); // Empty dependency array, so this runs once on mount
+
 
 
     const handleSubmitReview = async (e) => {
@@ -111,7 +116,9 @@ const BlogDetailsPage = () => {
 
 
     if (error) return <p>{error}</p>;
-    if (!blog) return <p>Loading...</p>;
+    if (!blog) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div>

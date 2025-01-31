@@ -2,64 +2,52 @@ import React, { useEffect, useState } from "react";
 import myaxios from "../utils/myaxios";
 
 const ProfilePage = () => {
-    const [profile, setProfile] = useState({
-        id: '',
-        username: '',
-        first_name: '',
-        last_name: '',
-        email: '',
-    });
+    const [profile, setProfile] = useState(null);
 
     const [loading, setLoading] = useState(true); // Loading state
     const [isSubmitting, setIsSubmitting] = useState(false); // Track the submission state
 
     useEffect(() => {
-        myaxios.get('/profile/')
-            .then(response => {
-                console.log('Fetched data:', response.data);
-                if (response.data && response.data.length > 0) {
-                    setProfile(response.data[0]); // Set the first profile data, because response is an array
+        const fetchProfile = async () => {
+            try {
+                const response = await myaxios.get("/profile/");
+                console.log("Fetched data:", response.data);
+    
+                if (Array.isArray(response.data) && response.data.length > 0) {
+                    setProfile(response.data[0]); // Set the first profile data
                 }
-            })
-            .catch(error => {
-                console.error('There was an error!', error);
-            })
-            .finally(() => {
-                // console.log('Data fetching finished.');
-                setLoading(false); // Update loading state
-            });
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchProfile();
     }, []);
 
     // Handle change in form fields
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setProfile((prevProfile) => ({
-            ...prevProfile,
-            [name]: value, // Dynamically set the profile field
-        }));
+    const handleChange = ({ target: { name, value } }) => {
+        setProfile(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault(); // Prevent the default form submission behavior
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!profile.id) return; // Prevent request if profile ID is missing
 
-        setIsSubmitting(true); // Set submitting state to true
+        setIsSubmitting(true);
 
-        // Make a PUT request to update the profile data
-        myaxios.put(`/profile/${profile.id}/`, profile)
-            .then(response => {
-                // console.log('Profile updated:', response.data);
-                // Optionally, show a success message or do something else after updating
-            })
-            .catch(error => {
-                console.error('Error updating profile:', error);
-            })
-            .finally(() => {
-                setIsSubmitting(false); // Reset the submitting state after request
-            });
+        try {
+            await myaxios.put(`/profile/${profile.id}/`, profile);
+            // Optionally, show a success message or update state if needed
+        } catch (error) {
+            console.error("Error updating profile:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
-
     // Debugging line to check loading state before rendering
-    console.log('Loading state:', loading);
+    // console.log('Loading state:', loading);
 
     // Show a loading message while the data is being fetched
     if (loading) {
@@ -85,6 +73,7 @@ const ProfilePage = () => {
                                                     <div className="row">
                                                         <div className="col-lg-12">
                                                             <fieldset>
+                                                                <label htmlFor="title">Username:</label>
                                                                 <input
                                                                     name="username"
                                                                     type="text"
@@ -97,6 +86,7 @@ const ProfilePage = () => {
                                                         </div>
                                                         <div className="col-lg-12">
                                                             <fieldset>
+                                                                <label htmlFor="title">First Name:</label>
                                                                 <input
                                                                     name="first_name"
                                                                     type="text"
@@ -109,6 +99,7 @@ const ProfilePage = () => {
                                                         </div>
                                                         <div className="col-lg-12">
                                                             <fieldset>
+                                                                <label htmlFor="title">Last Name:</label>
                                                                 <input
                                                                     name="last_name"
                                                                     type="text"
@@ -121,13 +112,14 @@ const ProfilePage = () => {
                                                         </div>
                                                         <div className="col-lg-12">
                                                             <fieldset>
+                                                                <label htmlFor="title">Email:</label>
                                                                 <input
                                                                     name="email"
                                                                     type="email"
                                                                     id="email"
                                                                     value={profile.email || 'Not available'}
                                                                     placeholder="Email"
-                                                                    onChange={handleChange} // Use the handleChange function
+                                                                    readOnly
                                                                 />
                                                             </fieldset>
                                                         </div>

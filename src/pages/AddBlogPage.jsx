@@ -8,42 +8,36 @@ const AddBlogPage = () => {
 
     // Fetch categories when the component mounts
     useEffect(() => {
-        myaxios
-            .get("/categories/")
-            .then((response) => {
+        const fetchCategories = async () => {
+            try {
+                const response = await myaxios.get("/categories/");
                 setCategories(response.data);
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.error("Error fetching categories:", error);
-            });
+            }
+        };
+
+        fetchCategories();
     }, []);
 
-    // Handle form submission
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const formdata = new FormData(e.target); // Get form data
-        const data = Object.fromEntries(formdata); // Convert to object
+        const formData = new FormData(e.target); // Get form data
 
-        myaxios.post(
-            "/blogs/", 
-            data, 
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            })
-            .then((response) => {
-                console.log(response.data);
-                if (response.status === 201) { // Assuming 201 is the success status for creation
-                    navigate("/");
-                } else {
-                    alert("Failed to add blog. Please try again.");
-                }
-            })
-            .catch((error) => {
-                console.error("Error adding blog:", error);
-                alert("Failed to add blog. Please try again.");
+        try {
+            const response = await myaxios.post("/blogs/", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
             });
+
+            if (response.status === 201) { // Assuming 201 indicates success
+                navigate("/my-blogs/");
+            } else {
+                alert("Failed to add blog. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error adding blog:", error);
+            alert("Failed to add blog. Please try again.");
+        }
     };
 
 
