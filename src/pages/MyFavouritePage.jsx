@@ -7,32 +7,31 @@ const MyFavouritePage = () => {
     const [blogs, setBlogs] = useState([]);
 
     useEffect(() => {
-        myaxios.get("/favourites/")
-            .then(response => {
-                console.log("Fetched data:", response.data);
-                if (response.data && response.data.length > 0) {
-                    setBlogs(response.data); // Set the entire array of blogs
+        const fetchFavourites = async () => {
+            try {
+                const { data } = await myaxios.get("/favourites/");
+                if (Array.isArray(data) && data.length > 0) {
+                    setBlogs(data);
                 }
-            })
-            .catch(error => {
-                console.error("Error fetching favourite blog:", error);
-            });
+            } catch (error) {
+                console.error("Error fetching favourite blogs:", error);
+            }
+        };
+    
+        fetchFavourites();
     }, []);
-
-
-    // Delete the blog
-    const handleDelete = (id) => {
-        if (window.confirm("Are you sure you want to delete this blog?")) {
-            myaxios
-                .delete(`/favourites/${id}/`)
-                .then(() => {
-                    setBlogs(blogs.filter((blog) => blog.id !== id)); // Remove the deleted blog
-                    alert("Blog deleted successfully.");
-                })
-                .catch((error) => {
-                    console.error("Error deleting the blog:", error);
-                    alert("Failed to delete the blog. Please try again.");
-                });
+    
+    
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this blog?")) return;
+    
+        try {
+            await myaxios.delete(`/favourites/${id}/`);
+            setBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== id)); // Remove the deleted blog
+            alert("Blog deleted successfully.");
+        } catch (error) {
+            console.error("Error deleting the blog:", error);
+            alert("Failed to delete the blog. Please try again.");
         }
     };
 

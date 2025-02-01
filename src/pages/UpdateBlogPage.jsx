@@ -6,89 +6,94 @@ const UpdateBlogPage = () => {
     const { id } = useParams(); // Get the blog ID from the route
     const navigate = useNavigate();
 
-    // State for form data
     const [formData, setFormData] = useState({
         title: "",
         category: "",
-        banner: null,
+        banner: null, // For new file
+        bannerUrl: "", // To display existing banner
         description: "",
         tags: "",
     });
-
-    const [categories, setCategories] = useState([]); // For fetching blog categories
-    const [isSubmitting, setIsSubmitting] = useState(false); // Track the submission state
-
+    
+    const [categories, setCategories] = useState([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
     // Fetch blog data and categories
     useEffect(() => {
-        // Fetch blog details
-        myaxios.get(`/blogs/${id}/`)
-            .then((response) => {
-                const { title, category, description, tag_title } = response.data;
-
-                // Join the tags array into a comma-separated string
-                const tagsString = tag_title ? tag_title.join(", ") : "";
-
+        const fetchBlogData = async () => {
+            try {
+                const { data } = await myaxios.get(`/blogs/${id}/`);
                 setFormData({
-                    title,
-                    category,
-                    banner: null, // Banner won't be preloaded
-                    description,
-                    tags: tagsString,
+                    title: data.title,
+                    category: data.category,
+                    banner: null, // Prevent preloading files
+                    bannerUrl: data.banner || "", // Store banner URL
+                    description: data.description,
+                    tags: data.tag_title?.join(", ") || "",
                 });
-            })
-            .catch((error) => console.error("Failed to fetch blog data:", error));
-
-        // Fetch categories
-        myaxios.get("/categories/")
-            .then((response) => {
-                setCategories(response.data);
-            })
-            .catch((error) => console.error("Failed to fetch categories:", error));
+            } catch (error) {
+                console.error("Failed to fetch blog data:", error);
+            }
+        };
+    
+        const fetchCategories = async () => {
+            try {
+                const { data } = await myaxios.get("/categories/");
+                setCategories(data);
+            } catch (error) {
+                console.error("Failed to fetch categories:", error);
+            }
+        };
+    
+        fetchBlogData();
+        fetchCategories();
     }, [id]);
-
-    // Handle form input change
+    
+    // Handle form input changes
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        setFormData((prevData) => ({
+            ...prevData,
+            [e.target.name]: e.target.value,
+        }));
     };
-
-    // Handle file input change
+    
+    // Handle file input changes
     const handleFileChange = (e) => {
-        setFormData({ ...formData, banner: e.target.files[0] });
+        const file = e.target.files[0];
+        setFormData((prevData) => ({
+            ...prevData,
+            banner: file, // Store new file
+            bannerUrl: URL.createObjectURL(file), // Show preview
+        }));
     };
-
+    
     // Handle form submission
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
-        setIsSubmitting(true); // Set submitting state to true
-
-        const updatedData = new FormData();
-        updatedData.append("title", formData.title);
-        updatedData.append("category", formData.category);
-        if (formData.banner) updatedData.append("banner", formData.banner);
-        updatedData.append("description", formData.description);
-        updatedData.append("tags", formData.tags); // Tags as a comma-separated string
-
-        myaxios.put(`/blogs/${id}/`, updatedData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        })
-            .then(() => {
-                // alert("Blog updated successfully!");
-                // navigate("/my-blogs/"); // Redirect to the blogs page
-            })
-            .catch(error => {
-                console.error('Error updating profile:', error);
-            })
-            .finally(() => {
-                setIsSubmitting(false); // Reset the submitting state after request
+        setIsSubmitting(true);
+    
+        try {
+            const updatedData = new FormData();
+            Object.entries(formData).forEach(([key, value]) => {
+                if (key !== "bannerUrl" && value) updatedData.append(key, value);
             });
+    
+            await myaxios.put(`/blogs/${id}/`, updatedData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+    
+            // alert("Blog updated successfully!");
+            // navigate("/my-blogs/");
+        } catch (error) {
+            console.error("Error updating blog:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
         <div>
+
             <div className="heading-page header-text">
                 <section className="page-heading">
                     <div className="container">
@@ -109,6 +114,8 @@ const UpdateBlogPage = () => {
                     <div className="row py-5 justify-content-center">
                         <div className="col-md-8">
                             <form onSubmit={handleSubmit} encType="multipart/form-data">
+                                
+                                {/* Blog Title */}
                                 <div className="form-group">
                                     <label htmlFor="title">Blog Title</label>
                                     <input
@@ -121,6 +128,7 @@ const UpdateBlogPage = () => {
                                     />
                                 </div>
 
+                                {/* Blog Category */}
                                 <div className="form-group">
                                     <label htmlFor="category">Blog Category</label>
                                     <select
@@ -139,8 +147,27 @@ const UpdateBlogPage = () => {
                                     </select>
                                 </div>
 
+                                {/* Blog Banner (with preview) */}
                                 <div className="form-group">
                                     <label htmlFor="banner">Blog Banner</label>
+                                    
+                                    {/* Show existing banner or new preview */}
+                                    {formData.bannerUrl && (
+                                        <div className="mb-3">
+                                            <img
+                                                src={formData.bannerUrl}
+                                                alt="Blog Banner"
+                                                style={{
+                                                    width: "100%",
+                                                    maxHeight: "300px",
+                                                    objectFit: "cover",
+                                                    borderRadius: "10px",
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                    
+                                    {/* File input */}
                                     <input
                                         className="form-control"
                                         type="file"
@@ -149,6 +176,7 @@ const UpdateBlogPage = () => {
                                     />
                                 </div>
 
+                                {/* Blog Description */}
                                 <div className="form-group">
                                     <label htmlFor="description">Description</label>
                                     <textarea
@@ -161,6 +189,7 @@ const UpdateBlogPage = () => {
                                     ></textarea>
                                 </div>
 
+                                {/* Blog Tags */}
                                 <div className="form-group">
                                     <label htmlFor="tags">Tags</label>
                                     <input
@@ -173,6 +202,7 @@ const UpdateBlogPage = () => {
                                     />
                                 </div>
 
+                                {/* Submit Button */}
                                 <div className="form-group my-2">
                                     <button type="submit" className="btn btn-primary btn-block" disabled={isSubmitting}>
                                         {isSubmitting ? 'Updating...' : 'Update'}
@@ -183,6 +213,7 @@ const UpdateBlogPage = () => {
                     </div>
                 </div>
             </section>
+
         </div>
     );
 };

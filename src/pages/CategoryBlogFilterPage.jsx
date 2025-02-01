@@ -38,6 +38,12 @@ const CategoryBlogFilterPage = () => {
     }, [categoryId]); // Effect depends on categoryId
 
 
+    const getCategoryName = (id) => {
+        const category = categories.find(cat => cat.id.toString() === id);
+        return category ? category.title : "Unknown Category";
+    };
+
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -73,7 +79,7 @@ const CategoryBlogFilterPage = () => {
                             <div className="col-lg-12">
                                 <div className="text-content">
                                     <h4>Category Results</h4>
-                                    <h2>Category-{categoryId}</h2>
+                                    <h2>{getCategoryName(categoryId)}</h2>
                                 </div>
                             </div>
                         </div>

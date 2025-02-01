@@ -92,7 +92,9 @@ const Header = () => {
                                             <Link className="dropdown-item" to="/add-blog/">Add Blog</Link>
                                             <Link className="dropdown-item" to="/my-blogs/">My Blogs</Link>
                                             <Link className="dropdown-item" to="/my-favourites/">Favourite Blogs</Link>
-                                            <button className="dropdown-item" onClick={handleLogout}>Logout</button>
+                                            <button className="dropdown-item" onClick={handleLogout} style={{ cursor: "pointer" }}>
+                                                Logout
+                                            </button>
                                         </div>
                                     </li>
                                 ) : (

@@ -73,7 +73,7 @@ const TagBlogFilterPage = () => {
                             <div className="col-lg-12">
                                 <div className="text-content">
                                     <h4>Tag Results</h4>
-                                    <h2>Tag-{tagSlug}</h2>
+                                    <h2>{tagSlug}</h2>
                                 </div>
                             </div>
                         </div>
