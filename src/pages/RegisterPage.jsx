@@ -5,26 +5,25 @@ const RegisterPage = () => {
 
     const navigate = useNavigate(); // Hook for navigation
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const formdata = new FormData(e.target);
         const data = Object.fromEntries(formdata);
-
-        myaxios.post(
-            '/register/',
-            data,
-        ).then(response => {
-            console.log(response.data);
-            if(response.data.status === 'success') {
+    
+        try {
+            const response = await myaxios.post('/register/', data);
+            // console.log(response.data);
+    
+            if (response.data.status === 'success') {
                 navigate('/login/');
             } else {
                 alert('Register Failed');
             }
-        }).catch(error => {
+        } catch (error) {
             console.error(error);
             alert('Register Failed');
-        });
-    }
+        }
+    };
 
 
     return (

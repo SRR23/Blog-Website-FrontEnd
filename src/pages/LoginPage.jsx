@@ -6,29 +6,27 @@ const LoginPage = () => {
 
     const navigate = useNavigate(); // Hook for navigation
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const formdata = new FormData(e.target);
-        const data = Object.fromEntries(formdata);
-
-        myaxios.post(
-            '/login/',
-            data,
-        ).then(response => {
-            // console.log(response.data);
-            if(response.data.status === 'success') {
-                localStorage.setItem('username', response.data.username);
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('refresh_token', response.data.refresh_token);
+        
+        const data = Object.fromEntries(new FormData(e.target));
+    
+        try {
+            const { data: response } = await myaxios.post('/login/', data);
+    
+            if (response.status === 'success') {
+                ['username', 'token', 'refresh_token'].forEach(key =>
+                    localStorage.setItem(key, response[key])
+                );
                 navigate('/');
             } else {
                 alert('Login Failed');
             }
-        }).catch(error => {
+        } catch (error) {
             console.error(error);
             alert('Login Failed');
-        });
-    }
+        }
+    };
 
 
     return (

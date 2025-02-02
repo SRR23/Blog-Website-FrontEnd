@@ -104,9 +104,9 @@ const TagBlogFilterPage = () => {
                                                             <h4>{blog.title}</h4>
                                                         </Link>
                                                         <ul className="post-info">
-                                                            <li><a href="#">{blog.user}</a></li>
-                                                            <li><a href="#">{blog.created_date}</a></li>
-                                                            <li><a href="#">{blog.reviews.length} Comments</a></li>
+                                                            <li><Link to={`/blog-details/${blog.slug}/`}>{blog.user}</Link></li>
+                                                            <li><Link to={`/blog-details/${blog.slug}/`}>{blog.created_date}</Link></li>
+                                                            <li><Link to={`/blog-details/${blog.slug}/`}>{blog.reviews.length} Comments</Link></li>
                                                         </ul>
                                                         <div className="post-options">
                                                             <div className="row">

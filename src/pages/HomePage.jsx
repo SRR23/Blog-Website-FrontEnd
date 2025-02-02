@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import myaxios from "../utils/myaxios";
+import OwlCarousel from "react-owl-carousel"; // Import Owl Carousel
+import "owl.carousel/dist/assets/owl.carousel.css";
+import "owl.carousel/dist/assets/owl.theme.default.css";
 
 const HomePage = () => {
     const [blogs, setBlogs] = useState([]); // Initialize as an array
@@ -39,149 +42,76 @@ const HomePage = () => {
     return (
         <div>
 
-            
             {/* <div className="main-banner header-text">
                 <div className="container-fluid">
+                
                     <div className="owl-banner owl-carousel">
-                    <div className="item">
-                        <img src="/images/banner-item-01.jpg" alt="" />
-                        <div className="item-content">
-                        <div className="main-content">
-                            <div className="meta-category">
-                            <span>Fashion</span>
+                    {blogs.map((blog) => (
+                        <div className="item" key={blog.id}>
+                            <img src={blog.banner} alt="banner" />
+                            <div className="item-content">
+                                <div className="main-content">
+                                    <div className="meta-category">
+                                        <span>{blog.category_title}</span>
+                                    </div>
+                                    <Link to="#"><h4>{blog.title}</h4></Link>
+                                    <ul className="post-info">
+                                        <li><a href="#">{blog.user}</a></li>
+                                        <li><a href="#">{blog.created_date}</a></li>
+                                        <li><a href="#">{blog.reviews.length} Comments</a></li>
+                                    </ul>
+                                </div>
                             </div>
-                            <Link to="post-details.html"><h4>Morbi dapibus condimentum</h4></Link>
-                            <ul className="post-info">
-                            <li><Link to="#">Admin</Link></li>
-                            <li><Link to="#">May 12, 2020</Link></li>
-                            <li><Link to="#">12 Comments</Link></li>
-                            </ul>
                         </div>
-                        </div>
-                    </div>
-                    <div className="item">
-                        <img src="/images/banner-item-02.jpg" alt="" />
-                        <div className="item-content">
-                        <div className="main-content">
-                            <div className="meta-category">
-                            <span>Nature</span>
-                            </div>
-                            <Link to="post-details.html"><h4>Morbi dapibus condimentum</h4></Link>
-                            <ul className="post-info">
-                            <li><Link to="#">Admin</Link></li>
-                            <li><Link to="#">May 12, 2020</Link></li>
-                            <li><Link to="#">12 Comments</Link></li>
-                            </ul>
-                        </div>
-                        </div>
-                    </div>
-                    <div className="item">
-                        <img src="/images/banner-item-03.jpg" alt="" />
-                        <div className="item-content">
-                        <div className="main-content">
-                            <div className="meta-category">
-                            <span>Lifestyle</span>
-                            </div>
-                            <Link to="post-details.html"><h4>Morbi dapibus condimentum</h4></Link>
-                            <ul className="post-info">
-                            <li><Link to="#">Admin</Link></li>
-                            <li><Link to="#">May 12, 2020</Link></li>
-                            <li><Link to="#">12 Comments</Link></li>
-                            </ul>
-                        </div>
-                        </div>
-                    </div>
-                    <div className="item">
-                        <img src="/images/banner-item-04.jpg" alt="" />
-                        <div className="item-content">
-                        <div className="main-content">
-                            <div className="meta-category">
-                            <span>Fashion</span>
-                            </div>
-                            <Link to="post-details.html"><h4>Morbi dapibus condimentum</h4></Link>
-                            <ul className="post-info">
-                            <li><Link to="#">Admin</Link></li>
-                            <li><Link to="#">May 12, 2020</Link></li>
-                            <li><Link to="#">12 Comments</Link></li>
-                            </ul>
-                        </div>
-                        </div>
-                    </div>
-                    <div className="item">
-                        <img src="/images/banner-item-05.jpg" alt="" />
-                        <div className="item-content">
-                        <div className="main-content">
-                            <div className="meta-category">
-                            <span>Nature</span>
-                            </div>
-                            <Link to="post-details.html"><h4>Morbi dapibus condimentum</h4></Link>
-                            <ul className="post-info">
-                            <li><Link to="#">Admin</Link></li>
-                            <li><Link to="#">May 12, 2020</Link></li>
-                            <li><Link to="#">12 Comments</Link></li>
-                            </ul>
-                        </div>
-                        </div>
-                    </div>
-                    <div className="item">
-                        <img src="/images/banner-item-06.jpg" alt="" />
-                        <div className="item-content">
-                        <div className="main-content">
-                            <div className="meta-category">
-                            <span>Lifestyle</span>
-                            </div>
-                            <Link to="post-details.html"><h4>Morbi dapibus condimentum</h4></Link>
-                            <ul className="post-info">
-                            <li><Link to="#">Admin</Link></li>
-                            <li><Link to="#">May 12, 2020</Link></li>
-                            <li><Link to="#">12 Comments</Link></li>
-                            </ul>
-                        </div>
-                        </div>
-                    </div>
+                    ))}
                     </div>
                 </div>
             </div> */}
 
-
-            <div className="heading-page header-text">
-                {/* <section className="page-heading">
-                    <div className="container">
-                        <div className="row">
-                            <div className="col-lg-12">
-                            <div className="text-content">
-                                <h4>Recent Posts</h4>
-                                <h2>Our Recent Blog Entries</h2>
+            <div className="main-banner header-text">
+                <div className="container-fluid">
+                    <OwlCarousel
+                        className="owl-theme owl-banner"
+                        loop
+                        margin={10}
+                        nav
+                        dots={true}
+                        autoplay
+                        autoplayTimeout={3000}
+                        responsive={{
+                            0: { items: 1 },
+                            600: { items: 2 },
+                            1000: { items: 3 }
+                        }}
+                    >
+                        {blogs.map((blog) => (
+                            <div className="item" key={blog.id}>
+                                <img src={blog.banner} alt="banner" />
+                                <div className="item-content">
+                                    <div className="main-content">
+                                        <div className="meta-category">
+                                            <span>{blog.category_title}</span>
+                                        </div>
+                                        <Link to={`/blog-details/${blog.slug}/`}>
+                                            <h4>{blog.title}</h4>
+                                        </Link>
+                                        <ul className="post-info">
+                                            <li><Link to={`/blog-details/${blog.slug}/`}>{blog.user}</Link></li>
+                                            <li><Link to={`/blog-details/${blog.slug}/`}>{blog.created_date}</Link></li>
+                                            <li><Link to={`/blog-details/${blog.slug}/`}>{blog.reviews.length} Comments</Link></li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
-                            </div>
-                        </div>
-                    </div>
-                </section> */}
+                        ))}
+                    </OwlCarousel>
+                </div>
             </div>
-    
-            
 
-            <section className="call-to-action">
-                {/* <div className="container">
-                    <div className="row">
-                    <div className="col-lg-12">
-                        <div className="main-content">
-                        <div className="row">
-                            <div className="col-lg-8">
-                            <span>Stand Blog HTML5 Template</span>
-                            <h4>Creative HTML Template For Bloggers!</h4>
-                            </div>
-                            <div className="col-lg-4">
-                            <div className="main-button">
-                                <a rel="nofollow" href="https://templatemo.com/tm-551-stand-blog" target="_parent">Download Now!</a>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                </div> */}
-            </section>
+
+            {/* <div className="heading-page header-text">
+                
+            </div> */}
 
 
             <section className="blog-posts">
@@ -205,11 +135,11 @@ const HomePage = () => {
                                             <span>{blog.category_title}</span>
                                             <Link to={`/blog-details/${blog.slug}/`}><h4>{blog.title}</h4></Link>
                                             <ul className="post-info">
-                                                <li><a href="#">{blog.user}</a></li>
-                                                <li><a href="#">{blog.created_date}</a></li>
-                                                <li><a href="#">{blog.reviews.length} Comments</a></li>
+                                                <li><Link to={`/blog-details/${blog.slug}/`}>{blog.user}</Link></li>
+                                                <li><Link to={`/blog-details/${blog.slug}/`}>{blog.created_date}</Link></li>
+                                                <li><Link to={`/blog-details/${blog.slug}/`}>{blog.reviews.length} Comments</Link></li>
                                             </ul>
-                                            <p>{blog.description}</p>
+                                            {/* <p>{blog.description}</p> */}
                                             <div className="post-options">
                                                 <div className="row">
                                                 <div className="col-6">
