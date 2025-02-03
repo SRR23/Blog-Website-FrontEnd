@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const myaxios = axios.create({
-    baseURL: "http://127.0.0.1:8000/api",
+    baseURL: "https://saidur.pythonanywhere.com/api",
     headers: {
         'Content-Type': 'application/json',
     },
@@ -31,7 +31,7 @@ myaxios.interceptors.response.use(
             if (refreshToken) {
                 try {
                     // Make a request to refresh the access token
-                    const response = await axios.post('http://127.0.0.1:8000/api/token/refresh/', {
+                    const response = await axios.post('https://saidur.pythonanywhere.com/api/token/refresh/', {
                         refresh: refreshToken,
                     });
                     
