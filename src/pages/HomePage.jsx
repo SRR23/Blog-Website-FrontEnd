@@ -42,31 +42,6 @@ const HomePage = () => {
     return (
         <div>
 
-            {/* <div className="main-banner header-text">
-                <div className="container-fluid">
-                
-                    <div className="owl-banner owl-carousel">
-                    {blogs.map((blog) => (
-                        <div className="item" key={blog.id}>
-                            <img src={blog.banner} alt="banner" />
-                            <div className="item-content">
-                                <div className="main-content">
-                                    <div className="meta-category">
-                                        <span>{blog.category_title}</span>
-                                    </div>
-                                    <Link to="#"><h4>{blog.title}</h4></Link>
-                                    <ul className="post-info">
-                                        <li><a href="#">{blog.user}</a></li>
-                                        <li><a href="#">{blog.created_date}</a></li>
-                                        <li><a href="#">{blog.reviews.length} Comments</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                    </div>
-                </div>
-            </div> */}
 
             <div className="main-banner header-text">
                 <div className="container-fluid">
@@ -107,11 +82,6 @@ const HomePage = () => {
                     </OwlCarousel>
                 </div>
             </div>
-
-
-            {/* <div className="heading-page header-text">
-                
-            </div> */}
 
 
             <section className="blog-posts">

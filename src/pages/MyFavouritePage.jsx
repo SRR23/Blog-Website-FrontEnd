@@ -80,6 +80,7 @@ const MyFavouritePage = () => {
                                                 <i className="fa fa-trash"></i>
                                             </button>
                                         </p>
+                                        <h4>{blog.user}</h4>
                                     </div>
                                 </div>
                             </div>

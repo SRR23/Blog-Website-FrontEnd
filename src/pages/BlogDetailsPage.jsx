@@ -25,7 +25,7 @@ const BlogDetailsPage = () => {
             setBlog(response.data);
             setReviews(response.data.reviews);
         } catch (error) {
-            console.error("Error fetching blog details:", error);
+            // console.error("Error fetching blog details:", error);
             setError("Failed to fetch blog details.");
         } finally {
             setLoading(false);
@@ -57,7 +57,7 @@ const BlogDetailsPage = () => {
                 setIsAddingToFavourite(false); // Set loading state to false
                 navigate("/my-favourites/"); // Redirect to My Favorites page
             } catch (error) {
-                console.error("Error adding to favorites:", error);
+                // console.error("Error adding to favorites:", error);
                 alert("Failed to add blog to favorites.");
                 setIsAddingToFavourite(false); // Set loading state to false
             }

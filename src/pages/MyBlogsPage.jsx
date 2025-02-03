@@ -32,7 +32,7 @@ const MyBlogsPage = () => {
             setBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== id)); // Remove the deleted blog
             alert("Blog deleted successfully.");
         } catch (error) {
-            console.error("Error deleting the blog:", error);
+            // console.error("Error deleting the blog:", error);
             alert("Failed to delete the blog. Please try again.");
         }
     };

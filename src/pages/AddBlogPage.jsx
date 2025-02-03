@@ -35,7 +35,7 @@ const AddBlogPage = () => {
                 alert("Failed to add blog. Please try again.");
             }
         } catch (error) {
-            console.error("Error adding blog:", error);
+            // console.error("Error adding blog:", error);
             alert("Failed to add blog. Please try again.");
         }
     };
@@ -59,6 +59,7 @@ const AddBlogPage = () => {
             </div>
 
             <section className="add-blog">
+                
                 <div className="container">
                     <div className="row py-5 justify-content-center">
                         <div className="col-md-8">

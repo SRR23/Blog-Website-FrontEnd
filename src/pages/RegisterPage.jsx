@@ -15,6 +15,7 @@ const RegisterPage = () => {
             // console.log(response.data);
     
             if (response.data.status === 'success') {
+                alert('Registration Successful, Now Login');
                 navigate('/login/');
             } else {
                 alert('Register Failed');
@@ -93,7 +94,8 @@ const RegisterPage = () => {
                                                     <button type="submit" id="submit" className="main-button">Register</button>
                                                 </fieldset>
                                             </div>
-                                            <h3>Already have an account!! <Link to="/login">Login </Link>here.</h3>
+                                            <br /><br /><br />
+                                            <h3>Already have an account!! <Link to="/login/">Login </Link>here.</h3>
                                         </div>
                                     </form>
                                 </div>

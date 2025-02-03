@@ -70,6 +70,7 @@ const LoginPage = () => {
                                                 <button type="submit" id="submit" className="main-button">Login</button>
                                             </fieldset>
                                         </div>
+                                        <br /><br /><br />
                                         <h3>Don't have an account? <Link to="/register/">Register </Link>here</h3>.
                                     </div>
 

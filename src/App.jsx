@@ -14,6 +14,8 @@ import MyFavouritePage from "./pages/MyFavouritePage";
 import CategoryBlogFilterPage from "./pages/CategoryBlogFilterPage";
 import TagBlogFilterPage from "./pages/TagBlogFilterPage";
 import SearchBlogsPage from "./pages/SearchBlogsPage";
+import NotFound404 from "./errorPages/NotFound404";
+import Unauthorized401 from "./errorPages/Unauthorized401";
 
 function App() {
   
@@ -44,6 +46,11 @@ function App() {
             </Route>
 
           </Route>
+
+          {/* Catch-all route for 404 */}
+          <Route path="*" element={<NotFound404 />} />
+          {/* Catch-all route for 401 */}
+          <Route path="/forbidden/" element={<Unauthorized401 />} />
           
           
         </Routes>
