@@ -145,7 +145,7 @@ const HomePage = () => {
                         
                         </div>
 
-
+                        {/* side bar */}
                         <div className="col-lg-4">
                             <div className="sidebar">
                                 <div className="row">
@@ -206,7 +206,7 @@ const HomePage = () => {
                                 </div>
                             </div>
                         </div>
-
+                        {/* side bar end */}
 
                     </div>
                 </div>

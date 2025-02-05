@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import myaxios from "../utils/myaxios";
 
+
 const AllBlogPage = () => {
     const [blogs, setBlogs] = useState([]); // Blogs array
     const [latest, setLatest] = useState([]); // Latest blog array
@@ -232,6 +233,7 @@ const AllBlogPage = () => {
                 </div>
               </div>
             </div>
+            
             {/* end Sidebar content */}
           </div>
         </div>
