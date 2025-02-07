@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { FaStar } from "react-icons/fa";
 import myaxios from "../utils/myaxios";
 
 const BlogDetailsPage = () => {
@@ -14,6 +15,7 @@ const BlogDetailsPage = () => {
     const [rating, setRating] = useState(5); // Default rating is 5
     const [reviews, setReviews] = useState([]);
     const [isAddingToFavourite, setIsAddingToFavourite] = useState(false); // State to track adding to favourites
+    const [isFavourited, setIsFavourited] = useState(blog?.is_favourited || false);
 
     const [error, setError] = useState(null);
 
@@ -170,7 +172,11 @@ const BlogDetailsPage = () => {
                                                         <div class="col-6">
                                                             <ul class="post-share">
                                                                 <button
-                                                                    className="btn border border-secondary rounded-pill px-3 text-primary"
+                                                                
+                                                                    className={`btn border rounded-pill px-3 
+                                                                    ${isAddingToFavourite || blog.is_favourited ? 
+                                                                    "bg-danger text-white" : "border-secondary text-primary"}`}
+
                                                                     onClick={() => handleAddToFavourite(blog.id)}
                                                                     disabled={isAddingToFavourite || blog.is_favourited} // Disable if adding to favourite or already favorited
                                                                 >
@@ -213,7 +219,7 @@ const BlogDetailsPage = () => {
                                     </div>
 
                                     {/* Review Submission Form */}
-                                    <div className="col-lg-12">
+                                    {/* <div className="col-lg-12">
                                         <div className="sidebar-item submit-comment">
                                             <div className="sidebar-heading">
                                                 <h2>Your Comment</h2>
@@ -267,6 +273,59 @@ const BlogDetailsPage = () => {
                                                 )}
                                             </div>
 
+                                        </div>
+                                    </div> */}
+
+                                    <div className="col-lg-12">
+                                        <div className="sidebar-item submit-comment">
+                                            <div className="sidebar-heading">
+                                                <h2>Your Comment</h2>
+                                            </div>
+                                            <div className="content">
+                                                {token ? (
+                                                    <form onSubmit={handleSubmitReview}>
+                                                        <div className="row">
+                                                            <div className="col-lg-12">
+                                                                <fieldset>
+                                                                    <label htmlFor="rating">Rating:</label>
+                                                                    <div style={{ display: "flex", gap: "5px" }}>
+                                                                        {[1, 2, 3, 4, 5].map((star) => (
+                                                                            <FaStar
+                                                                                key={star}
+                                                                                size={25}
+                                                                                style={{ cursor: "pointer" }}
+                                                                                color={star <= rating ? "#ffc107" : "#e4e5e9"}
+                                                                                onClick={() => setRating(star)}
+                                                                            />
+                                                                        ))}
+                                                                    </div>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div className="col-lg-12">
+                                                                <fieldset>
+                                                                    <textarea
+                                                                        name="text"
+                                                                        rows="6"
+                                                                        placeholder="Type your comment"
+                                                                        required
+                                                                        value={comment}
+                                                                        onChange={(e) => setComment(e.target.value)}
+                                                                    ></textarea>
+                                                                </fieldset>
+                                                            </div>
+                                                            <div className="col-lg-12">
+                                                                <fieldset>
+                                                                    <button type="submit" className="main-button">Submit</button>
+                                                                </fieldset>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                ) : (
+                                                    <p style={{ color: "red", textAlign: "center" }}>
+                                                        Please <Link to="/login/">log in</Link> to post a review.
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
 
