@@ -32,7 +32,7 @@ const Header = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('refresh_token');
         setUsername(null); // Update state to reflect the logout
-        navigate('/login'); // Navigate to login page
+        navigate('/login/'); // Navigate to login page
     };
 
     // Helper function to check if the current path matches the link
@@ -84,9 +84,9 @@ const Header = () => {
 
                                 {username ? (
                                     <li className="nav-item dropdown">
-                                        <Link className="nav-link dropdown-toggle" to="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button className="nav-link dropdown-toggle" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             {username}
-                                        </Link>
+                                        </button>
                                         <div className="dropdown-menu" aria-labelledby="userDropdown">
                                             <Link className="dropdown-item" to="/profile/">Profile</Link>
                                             <Link className="dropdown-item" to="/add-blog/">Add Blog</Link>
