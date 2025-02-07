@@ -15,7 +15,6 @@ const BlogDetailsPage = () => {
     const [rating, setRating] = useState(5); // Default rating is 5
     const [reviews, setReviews] = useState([]);
     const [isAddingToFavourite, setIsAddingToFavourite] = useState(false); // State to track adding to favourites
-    const [isFavourited, setIsFavourited] = useState(blog?.is_favourited || false);
 
     const [error, setError] = useState(null);
 
@@ -44,7 +43,7 @@ const BlogDetailsPage = () => {
     const handleAddToFavourite = async (blogId) => {
     
         if (!token) {
-            navigate("/login"); // Redirect to login if not authenticated
+            navigate("/login/"); // Redirect to login if not authenticated
         } else {
 
             setIsAddingToFavourite(true); // Set loading state to true

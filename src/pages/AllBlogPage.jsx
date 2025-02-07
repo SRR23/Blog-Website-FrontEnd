@@ -28,7 +28,6 @@ const AllBlogPage = () => {
   
           if (data) {
               setBlogs(data.results);
-              console.log(data.results);
               setNextPage(data.next);
               setPreviousPage(data.previous);
           }
