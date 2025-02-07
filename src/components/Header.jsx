@@ -84,7 +84,9 @@ const Header = () => {
 
                                 {username ? (
                                     <li className="nav-item dropdown">
-                                        <button className="btn nav-link dropdown-toggle" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button className="nav-link dropdown-toggle" id="userDropdown" role="button" 
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+                                        style={{ cursor: "pointer" }}>
                                             {username}
                                         </button>
                                         <div className="dropdown-menu" aria-labelledby="userDropdown">
