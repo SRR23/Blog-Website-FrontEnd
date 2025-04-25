@@ -109,7 +109,7 @@ const HomePage = () => {
       try {
         // Fetch blogs, categories, and tags simultaneously
         const [blogsRes, categoriesRes, tagsRes] = await Promise.all([
-          myaxios.get("/all-blogs/?latest=4"),
+          myaxios.get("/all-blogs/?latest=5"),
           myaxios.get("/categories/"),
           myaxios.get("/tags/"),
         ]);
@@ -150,7 +150,7 @@ const HomePage = () => {
               }}
               className="swiper-banner"
             >
-              {[1, 2, 3].map((i) => (
+              {[1, 2, 3, 4, 5].map((i) => (
                 <SwiperSlide key={i}>
                   <SkeletonBanner />
                 </SwiperSlide>
@@ -165,7 +165,7 @@ const HomePage = () => {
               <div className="col-lg-8">
                 <div className="all-blog-posts">
                   <div className="row">
-                    {[1, 2, 3].map((i) => (
+                    {[1, 2, 3, 4, 5].map((i) => (
                       <SkeletonBlogPost key={i} />
                     ))}
                   </div>
@@ -193,15 +193,15 @@ const HomePage = () => {
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={10}
-            slidesPerView={Math.min(blogs.length || 1, 3)}
+            slidesPerView={3}
             navigation
             pagination={{ clickable: true }}
             autoplay={{ delay: 3000, disableOnInteraction: false }}
-            loop={blogs.length > 3}
+            loop={blogs.length >= 5}
             breakpoints={{
               0: { slidesPerView: 1 },
-              600: { slidesPerView: Math.min(blogs.length || 1, 2) },
-              1000: { slidesPerView: Math.min(blogs.length || 1, 3) },
+              600: { slidesPerView: 2},
+              1000: { slidesPerView: 3},
             }}
             className="swiper-banner"
           >
