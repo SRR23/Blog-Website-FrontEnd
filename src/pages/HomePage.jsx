@@ -109,6 +109,7 @@ const HomePage = () => {
           myaxios.get("/tags/"),
         ]);
 
+        console.log("Blogs Response:", blogsRes.data.map(blog => ({ id: blog.id, title: blog.title, banner: blog.banner })));
         // Set state for all data
         setBlogs(blogsRes.data || []);
         setCategories(categoriesRes.data || []);
@@ -127,7 +128,7 @@ const HomePage = () => {
     return (
       <div>
         {/* Skeleton Loading */}
-        <div className="main-banner header-text">
+        {/* <div className="main-banner header-text">
           <div className="container-fluid">
             <OwlCarousel
               className="owl-theme owl-banner"
@@ -148,7 +149,7 @@ const HomePage = () => {
               ))}
             </OwlCarousel>
           </div>
-        </div>
+        </div> */}
 
         <section className="blog-posts">
           <div className="container">
