@@ -114,14 +114,7 @@ const HomePage = () => {
           myaxios.get("/tags/"),
         ]);
 
-        console.log(
-          "Blogs Response:",
-          blogsRes.data.map((blog) => ({
-            id: blog.id,
-            title: blog.title,
-            banner: blog.banner,
-          }))
-        );
+        
         // Set state for all data
         setBlogs(blogsRes.data || []);
         setCategories(categoriesRes.data || []);
