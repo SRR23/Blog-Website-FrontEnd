@@ -4,6 +4,11 @@ import myaxios from "../utils/myaxios";
 import OwlCarousel from "react-owl-carousel"; // Import Owl Carousel
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const SkeletonBanner = () => (
   <div className="item placeholder">
@@ -104,12 +109,19 @@ const HomePage = () => {
       try {
         // Fetch blogs, categories, and tags simultaneously
         const [blogsRes, categoriesRes, tagsRes] = await Promise.all([
-          myaxios.get("/all-blogs/?latest=3"),
+          myaxios.get("/all-blogs/?latest=4"),
           myaxios.get("/categories/"),
           myaxios.get("/tags/"),
         ]);
 
-        console.log("Blogs Response:", blogsRes.data.map(blog => ({ id: blog.id, title: blog.title, banner: blog.banner })));
+        console.log(
+          "Blogs Response:",
+          blogsRes.data.map((blog) => ({
+            id: blog.id,
+            title: blog.title,
+            banner: blog.banner,
+          }))
+        );
         // Set state for all data
         setBlogs(blogsRes.data || []);
         setCategories(categoriesRes.data || []);
@@ -128,28 +140,31 @@ const HomePage = () => {
     return (
       <div>
         {/* Skeleton Loading */}
-        {/* <div className="main-banner header-text">
+        <div className="main-banner header-text">
           <div className="container-fluid">
-            <OwlCarousel
-              className="owl-theme owl-banner"
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              spaceBetween={10}
+              slidesPerView={3}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 3000, disableOnInteraction: false }}
               loop
-              margin={10}
-              nav
-              dots
-              autoplay
-              autoplayTimeout={3000}
-              responsive={{
-                0: { items: 1 },
-                600: { items: 2 },
-                1000: { items: 3 },
+              breakpoints={{
+                0: { slidesPerView: 1 },
+                600: { slidesPerView: 2 },
+                1000: { slidesPerView: 3 },
               }}
+              className="swiper-banner"
             >
               {[1, 2, 3].map((i) => (
-                <SkeletonBanner key={i} />
+                <SwiperSlide key={i}>
+                  <SkeletonBanner />
+                </SwiperSlide>
               ))}
-            </OwlCarousel>
+            </Swiper>
           </div>
-        </div> */}
+        </div>
 
         <section className="blog-posts">
           <div className="container">
@@ -182,53 +197,66 @@ const HomePage = () => {
     <div>
       <div className="main-banner header-text">
         <div className="container-fluid">
-          <OwlCarousel
-            className="owl-theme owl-banner"
-            loop
-            margin={10}
-            nav
-            dots={true}
-            autoplay
-            autoplayTimeout={3000}
-            responsive={{
-              0: { items: 1 },
-              600: { items: 2 },
-              1000: { items: 3 },
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            spaceBetween={10}
+            slidesPerView={Math.min(blogs.length || 1, 3)}
+            navigation
+            pagination={{ clickable: true }}
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            loop={blogs.length > 3}
+            breakpoints={{
+              0: { slidesPerView: 1 },
+              600: { slidesPerView: Math.min(blogs.length || 1, 2) },
+              1000: { slidesPerView: Math.min(blogs.length || 1, 3) },
             }}
+            className="swiper-banner"
           >
-            {blogs.map((blog) => (
-              <div className="item" key={blog.id}>
-                <img src={blog.banner} alt="banner" />
-                <div className="item-content">
-                  <div className="main-content">
-                    <div className="meta-category">
-                      <span>{blog.category_title}</span>
+            {blogs.length > 0 ? (
+              blogs.map((blog) => (
+                <SwiperSlide key={blog.id}>
+                  <div className="item">
+                    <img src={blog.banner} alt="banner" />
+                    <div className="item-content">
+                      <div className="main-content">
+                        <div className="meta-category">
+                          <span>{blog.category_title}</span>
+                        </div>
+                        <Link to={`/blog-details/${blog.slug}/`}>
+                          <h4>{blog.title}</h4>
+                        </Link>
+                        <ul className="post-info">
+                          <li>
+                            <Link to={`/blog-details/${blog.slug}/`}>
+                              {blog.user}
+                            </Link>
+                          </li>
+                          <li>
+                            <Link to={`/blog-details/${blog.slug}/`}>
+                              {blog.created_date}
+                            </Link>
+                          </li>
+                          <li>
+                            <Link to={`/blog-details/${blog.slug}/`}>
+                              {blog.reviews.length} Comments
+                            </Link>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
-                    <Link to={`/blog-details/${blog.slug}/`}>
-                      <h4>{blog.title}</h4>
-                    </Link>
-                    <ul className="post-info">
-                      <li>
-                        <Link to={`/blog-details/${blog.slug}/`}>
-                          {blog.user}
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to={`/blog-details/${blog.slug}/`}>
-                          {blog.created_date}
-                        </Link>
-                      </li>
-                      <li>
-                        <Link to={`/blog-details/${blog.slug}/`}>
-                          {blog.reviews.length} Comments
-                        </Link>
-                      </li>
-                    </ul>
+                  </div>
+                </SwiperSlide>
+              ))
+            ) : (
+              <SwiperSlide>
+                <div className="item">
+                  <div className="item-content">
+                    <p>No blogs available</p>
                   </div>
                 </div>
-              </div>
-            ))}
-          </OwlCarousel>
+              </SwiperSlide>
+            )}
+          </Swiper>
         </div>
       </div>
 
